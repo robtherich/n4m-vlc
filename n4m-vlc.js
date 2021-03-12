@@ -19,9 +19,10 @@ max.addHandlers({
 
 connect: () => {
 	vlc = new VLC.Client({
-		ip: "localhost",
+		ip: "localhost",	// for some reason passing localhost here stopped working on my machine
+		//ip: "192.168.1.4",// and I was forced to use the actual IP to get it working again  ¯\_(ツ)_/¯
 		port: 8080,
-		password: "vlc"	// set your password here
+		password: "vlc"		// set your password here
 	});
 	if(vlc) {
 		vlc.status().then((status) => {
@@ -37,6 +38,14 @@ connect: () => {
 	}
 	else {
 		max.post("error connecting to VLC");
+	}
+},
+
+get_status: (dname) => {
+	if(isconnected()) {
+		vlc.status().then((status) => {
+			max.setDict(dname, status);
+		})
 	}
 },
 
@@ -156,6 +165,12 @@ set_play: (state) => {
 			max.post('set_play error');
 			max.post(err);
 		}
+	}
+},
+
+set_position: (pos) => {
+	if(isconnected()) {
+		vlc.setProgress(pos * 100);
 	}
 }
 
